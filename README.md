@@ -81,3 +81,23 @@ Singkatnya, menjalankan thread lebih banyak akan menghasilkan lonjakan (spike) y
 ![grafik pakai thread 3 kali](<Screenshot 2026-05-12 191640-2.png>)
 ![cargo run 3 kali](<Screenshot 2026-05-12 183020-1.png>)
 
+
+Refleksi untuk bonus :
+Refleksi: Deployment Cloud, Konfigurasi Port, dan Evaluasi Commit Message
+
+Pada eksperimen kali ini, saya melakukan transisi dari lingkungan pengembangan lokal (local machine) ke lingkungan cloud. Proses ini memberikan beberapa insight baru, terutama terkait perbedaan arsitektur jaringan, keamanan, dan bagaimana kita mendokumentasikan proses pengembangan melalui commit message.
+
+1. Tantangan di Lingkungan Cloud dan Konfigurasi Firewall
+Ketika menjalankan aplikasi (seperti publisher, subscriber, dan message broker RabbitMQ) di mesin lokal, semua proses berjalan di dalam localhost sehingga tidak ada restriksi jaringan yang ketat. Namun, saat berpindah ke cloud, saya belajar bahwa keamanan adalah prioritas (biasanya default-deny).
+
+Untuk membuat aplikasi bisa saling berkomunikasi atau diakses dari luar, saya harus secara eksplisit membuka port untuk koneksi eksternal pada konfigurasi firewall (misalnya Security Groups atau Inbound Rules di provider cloud). Contohnya, membuka port khusus untuk protokol AMQP agar publisher/subscriber bisa terhubung ke RabbitMQ, atau port UI manajemen agar dashboard bisa diakses melalui browser. Hal ini menyadarkan saya betapa pentingnya pemahaman mengenai networking dan access control saat melakukan deployment ke production.
+
+2. Re-evaluasi Commit Message: "Make it works" dan "Simulating slow subscriber"
+Instruksi untuk mengulang/meninjau kembali commit message pada bagian "Make it works" dan "Simulating slow subscriber" mengingatkan saya pada pentingnya clean code dan sejarah pengembangan (git history) yang deskriptif.
+
+Pada fase "Make it works": Seringkali saat development, kita cenderung menggunakan commit message asal-asalan asalkan kode berhasil berjalan (misal: "fix bug" atau "make it work"). Melalui refleksi ini, saya menyadari bahwa commit message harus menjelaskan apa yang diubah dan mengapa perubahan itu membuat sistem berfungsi, misalnya: "feat: configure AMQP connection URI to point to cloud instance" atau "fix: update environment variables for remote message broker".
+
+Pada fase "Simulating slow subscriber": Commit message di sini harus merepresentasikan intent simulasi. Saat mengimplementasikan slow subscriber, saya merekayasa consumer agar memproses pesan lebih lambat dari laju publisher (misalnya dengan menyisipkan thread::sleep). Pesan commit yang baik harus menceritakan simulasi ini, contohnya: "test: introduce processing delay in subscriber thread to simulate bottleneck and observe RabbitMQ message queuing". Ini akan memudahkan developer lain (atau saya di masa depan) mengerti bahwa kode tersebut diubah untuk tujuan eksperimen beban antrean, bukan karena performa sistem yang buruk.
+
+Kesimpulan
+Secara keseluruhan, eksperimen di cloud ini tidak hanya menguji kemampuan saya menulis kode yang berfungsi, tetapi juga menguji pemahaman saya tentang infrastruktur jaringan (firewall/ports) dan kedisiplinan dalam menulis dokumentasi iterasi codebase melalui commit message yang bermakna. Hal ini sangat krusial untuk simulasi sistem terdistribusi yang nyata. 
