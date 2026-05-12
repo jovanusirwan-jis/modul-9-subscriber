@@ -51,3 +51,6 @@ Jadi secara keseluruhan:
 guest:guest@localhost:5672
 
 berarti: Menghubungkan aplikasi ke server RabbitMQ di komputer sendiri (localhost) melalui port 5672 menggunakan username guest dan password guest.
+
+![grafik pakai thread berkali kali ](<gambarpakai thread.jpeg>)
+
