@@ -52,5 +52,32 @@ guest:guest@localhost:5672
 
 berarti: Menghubungkan aplikasi ke server RabbitMQ di komputer sendiri (localhost) melalui port 5672 menggunakan username guest dan password guest.
 
+Refleksi pakai thread dan ga pakai thread  : 
+
+Perbedaan utama dari kedua metrik di dashboard RabbitMQ tersebut terletak pada beban pesan (message load) yang dikirim ke antrean. Saat program dijalankan berkali-kali (gambar pertama/kiri), sistem menerima dan menampung lebih banyak pesan dalam satu waktu dibandingkan saat hanya dijalankan 3 kali (gambar kedua/kanan).
+
+Berikut adalah rincian perbedaan yang terlihat pada grafik:
+
+Puncak Antrean Pesan (Queued Messages):
+
+Gambar Pertama (Kiri): Grafik Queued messages menunjukkan lonjakan yang lebih tinggi, memuncak di sekitar 16 pesan yang mengantre.
+
+Gambar Kedua (Kanan): Grafik menunjukkan puncak antrean yang lebih rendah, yaitu hanya mencapai sekitar 11 pesan.
+
+Kecepatan Pengiriman Pesan (Message Rates - Publish):
+
+Gambar Pertama (Kiri): Garis merah pada grafik Message rates (menandakan Publish) mencapai puncak di angka 3.0 pesan per detik (3.0/s). Ini berarti banyak thread yang berjalan bersamaan mengirimkan pesan dengan laju yang lebih cepat.
+
+Gambar Kedua (Kanan): Garis merah memuncak lebih rendah di angka 2.0 pesan per detik (2.0/s) karena jumlah pengiriman pesan (thread) lebih sedikit.
+
+Pola Pemrosesan oleh Consumer:
+
+Pada kedua gambar, garis ungu (Consumer ack) menunjukkan kecepatan consumer dalam memproses pesan, yang puncaknya konstan di kisaran 1.0/s.
+
+Bedanya, pada gambar pertama, garis ungu (durasi pemrosesan) akan membentang sedikit lebih panjang atau membutuhkan waktu lebih lama untuk mengosongkan antrean sampai kembali ke angka 0, karena jumlah pesan awal yang masuk lebih banyak.
+
+Singkatnya, menjalankan thread lebih banyak akan menghasilkan lonjakan (spike) yang lebih tinggi pada grafik Queued messages dan Publish rates karena RabbitMQ harus menangani volume pesan masuk yang lebih besar dalam waktu yang bersamaan.
 ![grafik pakai thread berkali kali ](<gambarpakai thread.jpeg>)
+![grafik pakai thread 3 kali](<Screenshot 2026-05-12 191640-2.png>)
+![cargo run 3 kali](<Screenshot 2026-05-12 183020-1.png>)
 
